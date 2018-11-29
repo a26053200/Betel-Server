@@ -80,7 +80,7 @@ public class GateServer extends BaseServer
 
     public static void main(String[] args) throws Exception
     {
-        Debug.initLog("[" + ServerName + "]", "log4j_gate_server.properties");
+        Debug.initLog("[" + ServerName + "]", "src/main/resources/log4j_gate_server.properties");
         new GateServer().run();
     }
 }

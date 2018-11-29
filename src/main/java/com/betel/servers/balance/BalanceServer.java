@@ -70,7 +70,7 @@ public class BalanceServer extends BaseServer
 
     public static void main(String[] args) throws Exception
     {
-        Debug.initLog("[" + ServerName + "]", "log4j_gate_server.properties");
+        Debug.initLog("[" + ServerName + "]", "src/main/resources/log4j_balance_server.properties");
         new BalanceServer().run();
     }
 }

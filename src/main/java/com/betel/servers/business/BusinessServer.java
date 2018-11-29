@@ -72,7 +72,7 @@ public class BusinessServer extends BaseServer
 
     public static void main(String[] args) throws Exception
     {
-        Debug.initLog("[" + ServerName + "]","log4j_business_server.properties");
+        Debug.initLog("[" + ServerName + "]","src/main/resources/log4j_business_server.properties");
         new BusinessServer().run();
     }
 }
