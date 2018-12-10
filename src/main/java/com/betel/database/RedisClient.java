@@ -1,6 +1,7 @@
 package com.betel.database;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -11,7 +12,7 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisClient
 {
-    private static final Logger logger = Logger.getLogger(RedisClient.class);
+    final static Logger logger = LogManager.getLogger(RedisClient.class);
 
     private static RedisClient s_instance = null;
 

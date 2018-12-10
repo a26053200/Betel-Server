@@ -2,13 +2,11 @@ package com.betel.asd;
 
 import com.betel.asd.interfaces.IBusiness;
 import com.betel.common.Monitor;
-import com.betel.consts.Bean;
-import com.betel.database.RedisKeys;
-import com.betel.servers.business.action.ImplAction;
-import com.betel.servers.business.modules.beans.Spec;
+import com.betel.servers.action.ImplAction;
 import com.betel.session.Session;
 import com.betel.utils.TimeUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 
@@ -20,7 +18,7 @@ import java.util.Date;
  */
 public abstract class Business<T> implements IBusiness<T>
 {
-    final static Logger logger = Logger.getLogger(Business.class);
+    final static Logger logger = LogManager.getLogger(Business.class);
     protected ImplAction action;
     protected Monitor monitor;
     protected BaseService<T> service;

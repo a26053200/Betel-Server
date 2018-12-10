@@ -2,21 +2,32 @@ package com.betel.common;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.betel.asd.BaseAction;
-import com.betel.servers.business.action.ImplAction;
+import com.betel.config.ServerConfigVo;
+import com.betel.database.RedisClient;
+import com.betel.servers.action.ImplAction;
 import com.betel.utils.BytesUtils;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
-import java.util.Iterator;
+
+import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * @ClassName: Monitor
@@ -26,25 +37,40 @@ import java.util.Iterator;
  */
 public abstract class Monitor
 {
-    private final static Logger logger = Logger.getLogger(Monitor.class);
+    final static Logger logger = LogManager.getLogger(Monitor.class);
 
+    /**
+     * 服务器配置
+     */
+    private ServerConfigVo serverCfgInfo;
     /**
      * 多个客户端链接通道
      */
     protected ChannelGroup channelGroup;
     /**
-     * 子Monitor
-     */
-    protected HashMap<String, ChannelHandlerContext> contextMap;
-    /**
      * 数据库
      */
     protected Jedis db;
-
     /**
      * Actions
      */
     protected HashMap<String, ImplAction<?>> actionMap;
+
+    public Monitor(ServerConfigVo serverCfgInfo)
+    {
+        this.serverCfgInfo = serverCfgInfo;
+
+        //所有已经链接的通道,用于广播
+        channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+        actionMap = new HashMap<>();
+        //初始化数据库
+        initDB();
+    }
+
+    public String getServerName()
+    {
+        return serverCfgInfo.getName();
+    }
 
     public ChannelGroup getChannelGroup()
     {
@@ -54,36 +80,6 @@ public abstract class Monitor
     public Channel getChannel(ChannelId channelId)
     {
         return channelGroup.find(channelId);
-    }
-
-    public ChannelHandlerContext getContext(String channelId)
-    {
-        return contextMap.get(channelId);
-    }
-
-    public ChannelHandlerContext regContext(ChannelHandlerContext ctx)
-    {
-        String chId = ctx.channel().id().asLongText();
-        if(!contextMap.containsKey(chId))
-            contextMap.put(chId,ctx);
-        return ctx;
-    }
-
-    public void delContext(ChannelHandlerContext ctx)
-    {
-        String chId = ctx.channel().id().asLongText();
-        if(contextMap.containsKey(chId))
-            contextMap.remove(chId,ctx);
-    }
-
-    public Monitor()
-    {
-        //所有已经链接的通道,用于广播
-        channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-        contextMap = new HashMap<>();
-        actionMap = new HashMap<>();
-        //初始化数据库
-        initDB();
     }
 
     public ImplAction getAction(String name)
@@ -195,7 +191,14 @@ public abstract class Monitor
     /**
      * 初始化数据库
      */
-    protected abstract void initDB();
+    private void initDB()
+    {
+        if (this.serverCfgInfo != null && this.serverCfgInfo.getDbIndex() >= 0)
+        {//连接数据库
+            RedisClient.getInstance().connectDB(this.serverCfgInfo.getDbHost(),this.serverCfgInfo.getDbPort());
+            this.db = RedisClient.getInstance().getDB(this.serverCfgInfo.getDbIndex());
+        }
+    }
 
     protected void sendBytes(Channel channel, byte[] bytes)
     {
@@ -205,5 +208,26 @@ public abstract class Monitor
         System.arraycopy(lenBytes, 0, mergeBytes, 0, lenBytes.length);
         System.arraycopy(bytes, 0, mergeBytes, lenBytes.length, bytes.length);
         channel.writeAndFlush(mergeBytes);
+    }
+
+    /**
+     * 直接响应客户端
+     * @param channel
+     * @param msg
+     * @param useJson 是否使用json传输，决定了是否在字符后面加 '\0' 结尾符符号
+     */
+    public void httpRspd(Channel channel, String msg, boolean useJson)
+    {
+        logger.info(String.format("[Http Rspd]:%s", msg));
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                HTTP_1_1, OK, Unpooled.wrappedBuffer(BytesUtils.string2Bytes(msg, useJson)));
+        if (useJson)
+            response.headers().set(CONTENT_TYPE, "application/json");
+        else
+            response.headers().set(CONTENT_TYPE, "text/plain");
+        response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
+        response.headers().set(CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        response.headers().set("Access-Control-Allow-Origin", "*");
+        channel.writeAndFlush(response);
     }
 }

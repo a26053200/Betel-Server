@@ -3,7 +3,8 @@ package com.betel.asd;
 import com.alibaba.fastjson.JSONObject;
 import com.betel.asd.interfaces.IDao;
 import com.betel.database.RedisKeys;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -16,7 +17,7 @@ import java.util.*;
  */
 public class BaseDao<T> implements IDao<T>
 {
-    final static Logger logger = Logger.getLogger(BaseDao.class);
+    final static Logger logger = LogManager.getLogger(BaseDao.class);
     protected Jedis db;
     protected Class<T> clazz;
 

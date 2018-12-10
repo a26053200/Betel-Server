@@ -2,6 +2,7 @@ package com.betel.session;
 
 import com.alibaba.fastjson.JSONObject;
 import com.betel.consts.Action;
+import com.betel.consts.ClientType;
 import com.betel.consts.FieldName;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -21,8 +22,8 @@ public class Session
     private SessionStatus status;
     //会话状态
     private SessionState state;
-    //接收到请参数
-    private ParamParser param;
+    //信道id
+    private String fromServer;
     //信道id
     private String channelId;
     //请求Action
@@ -37,12 +38,13 @@ public class Session
         this.state = SessionState.Success;
         this.status = SessionStatus.Free;
 
-        if(recvJson.containsKey("data"))
-            this.param = new ParamParser(recvJson);
-        if(recvJson.containsKey("client"))
-            client = recvJson.getString("client");
+        if(recvJson.containsKey(FieldName.CLIENT))
+            client = recvJson.getString(FieldName.CLIENT);
+        else
+            client = ClientType.Default;
+        this.fromServer = recvJson.getString(FieldName.FROM_SERVER);
         this.channelId = recvJson.getString(FieldName.CHANNEL_ID);
-        this.rqstAction = recvJson.getString(Action.NAME);
+        this.rqstAction = recvJson.getString(FieldName.ACTION);
     }
 
     public ChannelHandlerContext getContext()
@@ -75,11 +77,6 @@ public class Session
         this.status = status;
     }
 
-    public ParamParser getParam()
-    {
-        return param;
-    }
-
     public String getChannelId()
     {
         return channelId;
@@ -93,5 +90,10 @@ public class Session
     public String getClient()
     {
         return client;
+    }
+
+    public String getFromServer()
+    {
+        return fromServer;
     }
 }

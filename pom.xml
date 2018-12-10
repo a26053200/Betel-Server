@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>betel-server</groupId>
+    <groupId>betel-zhengnan</groupId>
     <artifactId>betel-server</artifactId>
     <version>1.0</version>
     <build>
@@ -19,20 +19,13 @@
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/apache-log4j/log4j -->
-        <dependency>
-            <groupId>apache-log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.8</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.11.1</version>
-        </dependency>-->
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
