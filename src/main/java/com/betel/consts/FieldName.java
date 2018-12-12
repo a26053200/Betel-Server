@@ -29,8 +29,6 @@ public class FieldName
 
     public static final String FROM_SERVER = "from_server";         //来源服务器
 
-    public static final String FORWARD_SERVER = "forward_server";   //转发服务器
-
     public static final String ERROR = "error";
 
     public static final String MSG = "msg";

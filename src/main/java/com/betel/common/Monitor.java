@@ -220,7 +220,7 @@ public abstract class Monitor
     {
         logger.info(String.format("[Http Rspd]:%s", msg));
         FullHttpResponse response = new DefaultFullHttpResponse(
-                HTTP_1_1, OK, Unpooled.wrappedBuffer(BytesUtils.string2Bytes(msg, useJson)));
+                HTTP_1_1, OK, Unpooled.wrappedBuffer(BytesUtils.string2Bytes(msg,false)));
         if (useJson)
             response.headers().set(CONTENT_TYPE, "application/json");
         else
