@@ -29,14 +29,7 @@ public class HttpServer extends ServerBase implements IServerClient
 {
     final static Logger logger = LogManager.getLogger(HttpServer.class);
 
-    private ServerConfigVo centerServerCfg;
-
     private ServerClient serverClient;
-
-    public void setCenterServerCfg(ServerConfigVo centerServerCfg)
-    {
-        this.centerServerCfg = centerServerCfg;
-    }
 
     public void setServerClient(ServerClient serverClient)
     {
@@ -53,6 +46,7 @@ public class HttpServer extends ServerBase implements IServerClient
     {
         EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+        ServerConfigVo cfg = getServerConfig();
         try
         {
             ServerBootstrap b = new ServerBootstrap(); // (2)
@@ -70,15 +64,14 @@ public class HttpServer extends ServerBase implements IServerClient
                     }).option(ChannelOption.SO_BACKLOG, 128)          // (5)
                     .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
-            ChannelFuture f = b.bind(getServerConfig().getPort()).sync(); // (7)
-            logger.info(getServerConfig().getName() + " startup successful!!!");
-
+            ChannelFuture f = b.bind(cfg.getPort()).sync(); // (7)
+            logger.info(String.format("%s:%d startup successful!!!",cfg.getName(),cfg.getPort()));
             //服务器客户端连接服务器的服务器
-            if (serverClient != null && centerServerCfg != null)
-                start(centerServerCfg,getMonitor());
+            if (serverClient != null)
+                start(cfg,getMonitor());
 
             f.channel().closeFuture().sync();
-            logger.info(getServerConfig().getName() + " close up...");
+            logger.info(cfg.getName() + " close up...");
         }
         finally
         {
@@ -95,7 +88,7 @@ public class HttpServer extends ServerBase implements IServerClient
             @Override
             public void run()
             {
-                logger.info("Http Server Client连接服务器:" + srvCfg.getName());
+                logger.info("Http Server Client is connecting center server:" + srvCfg.getCenterServerName());
                 try
                 {
                     serverClient.run();
@@ -105,6 +98,6 @@ public class HttpServer extends ServerBase implements IServerClient
                     e.printStackTrace();
                 }
             }
-        }, "Http Server Client-->" + srvCfg.getName()).start();
+        }, "Http Server Client-->" + srvCfg.getCenterServerName()).start();
     }
 }

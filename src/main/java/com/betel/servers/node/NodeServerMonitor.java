@@ -50,8 +50,7 @@ public class NodeServerMonitor extends ForwardMonitor
     protected void forward2Client(JSONObject jsonObject)
     {
         String channelId = jsonObject.getString(FieldName.CHANNEL_ID);
-        jsonObject.remove(FieldName.CHANNEL_ID);
-        jsonObject.remove(FieldName.SERVER);
+        removeIdentityInfo(jsonObject);
         ForwardContext clientCtx = getContext(channelId);
         if (clientCtx != null)
         {

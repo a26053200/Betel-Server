@@ -13,6 +13,17 @@ public class StringUtils
         return s == null || s.length() <= 0;
     }
 
+    public static boolean isNumber(String str)
+    {
+        for (int i = str.length(); --i >= 0; )
+        {
+            int chr = str.charAt(i);
+            if (chr < 48 || chr > 57)
+                return false;
+        }
+        return true;
+    }
+
     public static String RemoveAllEmpty(String resource)
     {
         StringBuffer src = new StringBuffer(resource);
@@ -45,7 +56,7 @@ public class StringUtils
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < src.length(); i++)
         {
-            switch(src.charAt(i))
+            switch (src.charAt(i))
             {
                 case '"':
                 case '\\':

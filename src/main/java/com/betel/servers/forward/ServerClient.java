@@ -54,11 +54,10 @@ public class ServerClient extends ServerClientBase
                     });
 
 
-            ChannelFuture f = b.connect(cfg.getHost(), cfg.getPort()).sync();
+            ChannelFuture f = b.connect(cfg.getCenterServerHost(), cfg.getCenterServerPort()).sync();
             channel = f.channel();
-            logger.info("Client connect " + cfg.getName() + " successful!!!");
+            logger.info("Client connect " + cfg.getCenterServerName() + " successful!!!");
             ForwardMonitor forwardMonitor = (ForwardMonitor)getMonitor();
-            forwardMonitor.setDestServerConfig(cfg);
             forwardMonitor.setServerClient(this);
             forwardMonitor.handshake(channel);
             f.channel().closeFuture().sync();

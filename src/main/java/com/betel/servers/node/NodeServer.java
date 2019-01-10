@@ -30,14 +30,7 @@ public class NodeServer extends ServerBase implements IServerClient
 {
     final static Logger logger = LogManager.getLogger(HttpServer.class);
 
-    private ServerConfigVo centerServerCfg;
-
     private ServerClient serverClient;
-
-    public void setCenterServerCfg(ServerConfigVo centerServerCfg)
-    {
-        this.centerServerCfg = centerServerCfg;
-    }
 
     public void setServerClient(ServerClient serverClient)
     {
@@ -73,11 +66,11 @@ public class NodeServer extends ServerBase implements IServerClient
                     .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
             ChannelFuture f = b.bind(cfg.getPort()).sync(); // (7)
-            logger.info(cfg.getName() + " startup successful!!!");
+            logger.info(String.format("%s :%d startup successful!",cfg.getName(),cfg.getPort()));
 
             //服务器客户端连接服务器的服务器
-            if (serverClient != null && centerServerCfg != null)
-                start(centerServerCfg, getMonitor());
+            if (serverClient != null)
+                start(cfg, getMonitor());
 
             f.channel().closeFuture().sync();
             logger.info(cfg + " close up...");
@@ -97,7 +90,7 @@ public class NodeServer extends ServerBase implements IServerClient
             @Override
             public void run()
             {
-                logger.info("Node Server Client连接服务器:" + srvCfg.getName());
+                logger.info("Node Server Client is connecting center server:" + srvCfg.getCenterServerName());
                 try
                 {
                     serverClient.run();
@@ -107,6 +100,6 @@ public class NodeServer extends ServerBase implements IServerClient
                     e.printStackTrace();
                 }
             }
-        }, "Node Server Client-->" + srvCfg.getName()).start();
+        }, "Node Server Client-->" + srvCfg.getCenterServerName()).start();
     }
 }

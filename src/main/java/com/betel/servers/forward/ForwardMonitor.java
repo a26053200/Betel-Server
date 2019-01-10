@@ -22,11 +22,6 @@ import java.util.HashMap;
 public abstract class ForwardMonitor extends Monitor
 {
     /**
-     * 转发的目标服务器
-     */
-    protected ServerConfigVo destServerCfg;
-
-    /**
      * 服务器的客户端
      */
     protected ServerClient serverClient;
@@ -36,10 +31,6 @@ public abstract class ForwardMonitor extends Monitor
      */
     protected HashMap<String, ForwardContext> contextMap;
 
-    public void setDestServerConfig(ServerConfigVo destServerCfg)
-    {
-        this.destServerCfg = destServerCfg;
-    }
 
     public void setServerClient(ServerClient serverClient)
     {
@@ -74,7 +65,7 @@ public abstract class ForwardMonitor extends Monitor
     public void handshake(Channel channel)
     {
         JSONObject sendJson = new JSONObject();
-        sendJson.put(FieldName.SERVER, destServerCfg.getName());
+        sendJson.put(FieldName.SERVER, getCerverCfgInfo().getCenterServerName());
         sendJson.put(FieldName.HANDSHAKE_SERVER, getServerName());
         sendJson.put(FieldName.ACTION, Action.HANDSHAKE);
         String jsonString = sendJson.toString();
@@ -91,11 +82,24 @@ public abstract class ForwardMonitor extends Monitor
             String clientType = jsonObject.getString(FieldName.CLIENT);
             if (StringUtils.isNullOrEmpty(clientType))
                 clientType = ClientType.Default;
-            jsonObject.put(FieldName.FROM_SERVER, getServerName());
-            jsonObject.put(FieldName.CHANNEL_ID, ctx.channel().id().asLongText());
+            addIdentityInfo(ctx, jsonObject);
             addContext(ctx,clientType);
             forward2DestServer(jsonObject);
         }
+    }
+
+    //给json添加一些身份信息
+    protected void addIdentityInfo(ChannelHandlerContext ctx, JSONObject jsonObject)
+    {
+        jsonObject.put(FieldName.FROM_SERVER, getServerName());
+        jsonObject.put(FieldName.CHANNEL_ID, ctx.channel().id().asLongText());
+    }
+
+    //移除json身份信息
+    protected void removeIdentityInfo(JSONObject jsonObject)
+    {
+        jsonObject.remove(FieldName.CHANNEL_ID);
+        jsonObject.remove(FieldName.SERVER);
     }
 
     protected abstract void forward2Client(JSONObject jsonObject);

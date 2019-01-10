@@ -6,6 +6,7 @@ import com.betel.config.ServerConfigVo;
 import com.betel.database.RedisClient;
 import com.betel.servers.action.ImplAction;
 import com.betel.utils.BytesUtils;
+import com.betel.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -71,7 +72,10 @@ public abstract class Monitor
     {
         return serverCfgInfo.getName();
     }
-
+    public ServerConfigVo getCerverCfgInfo()
+    {
+        return serverCfgInfo;
+    }
     public ChannelGroup getChannelGroup()
     {
         return channelGroup;
@@ -193,7 +197,7 @@ public abstract class Monitor
      */
     private void initDB()
     {
-        if (this.serverCfgInfo != null && this.serverCfgInfo.getDbIndex() >= 0)
+        if (this.serverCfgInfo != null && !StringUtils.isNullOrEmpty(this.serverCfgInfo.getDbHost()))
         {//连接数据库
             RedisClient.getInstance().connectDB(this.serverCfgInfo.getDbHost(),this.serverCfgInfo.getDbPort());
             this.db = RedisClient.getInstance().getDB(this.serverCfgInfo.getDbIndex());

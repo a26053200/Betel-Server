@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: log4j-1.2.8.jar fastjson-1.2.47.jar commons-pool2-2.4.2.ja
- r netty-all-4.1.25.Final.jar jedis-2.9.0.jar
-Main-Class: 
-

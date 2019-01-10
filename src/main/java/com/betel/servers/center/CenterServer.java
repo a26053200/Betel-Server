@@ -16,6 +16,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.StringMapMessage;
 
 /**
  * @ClassName: CenterServer
@@ -57,7 +58,7 @@ public class CenterServer extends ServerBase
 
 
             ChannelFuture f = b.bind(cfg.getPort()).sync(); // (7)
-            logger.info(cfg.getName() + " startup successful!!!");
+            logger.info(String.format("%s:%d startup successful!!!",cfg.getName(),cfg.getPort()));
             f.channel().closeFuture().sync();
             logger.info(cfg.getName() + " close up...");
         }

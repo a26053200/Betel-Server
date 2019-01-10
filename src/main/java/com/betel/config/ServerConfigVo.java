@@ -9,13 +9,41 @@ package com.betel.config;
 public class ServerConfigVo
 {
     private String name;
-    private String host;
     private int port;
+    private String centerServerName;
+    private String centerServerHost;
+    private int centerServerPort;
     private String dbHost;
     private int dbPort;
     private int dbIndex;
     private int decoderLengthFieldOffset;
     private int decoderLengthFieldLength;
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public int getPort()
+    {
+        return port;
+    }
+
+    public String getCenterServerName()
+    {
+        return centerServerName;
+    }
+
+    public String getCenterServerHost()
+    {
+        return centerServerHost;
+    }
+
+    public int getCenterServerPort()
+    {
+        return centerServerPort;
+    }
+
     public String getDbHost()
     {
         return dbHost;
@@ -24,21 +52,6 @@ public class ServerConfigVo
     public int getDbPort()
     {
         return dbPort;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public String getHost()
-    {
-        return host;
-    }
-
-    public int getPort()
-    {
-        return port;
     }
 
     public int getDbIndex()
@@ -56,33 +69,13 @@ public class ServerConfigVo
         return decoderLengthFieldLength;
     }
 
-    public ServerConfigVo(String name, String host, int port, String dbHost, int dbPort)
+    public ServerConfigVo(String name, int port, String centerServerName, String centerServerHost, int centerServerPort, String dbHost, int dbPort, int dbIndex, int decoderLengthFieldOffset, int decoderLengthFieldLength)
     {
         this.name = name;
-        this.host = host;
         this.port = port;
-        this.dbHost = dbHost;
-        this.dbPort = dbPort;
-        this.dbIndex = -1;
-        this.decoderLengthFieldOffset = 0;
-        this.decoderLengthFieldLength = 4;
-    }
-    public ServerConfigVo(String name, String host, int port, String dbHost, int dbPort, int dbIndex)
-    {
-        this.name = name;
-        this.host = host;
-        this.port = port;
-        this.dbHost = dbHost;
-        this.dbPort = dbPort;
-        this.dbIndex = dbIndex;
-        this.decoderLengthFieldOffset = 0;
-        this.decoderLengthFieldLength = 4;
-    }
-    public ServerConfigVo(String name, String host, int port, String dbHost, int dbPort, int dbIndex, int decoderLengthFieldOffset, int decoderLengthFieldLength)
-    {
-        this.name = name;
-        this.host = host;
-        this.port = port;
+        this.centerServerName = centerServerName;
+        this.centerServerHost = centerServerHost;
+        this.centerServerPort = centerServerPort;
         this.dbHost = dbHost;
         this.dbPort = dbPort;
         this.dbIndex = dbIndex;

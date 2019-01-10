@@ -7,6 +7,7 @@ import com.betel.consts.FieldName;
 import com.betel.servers.center.CenterServer;
 import com.betel.servers.forward.ForwardContext;
 import com.betel.servers.forward.ForwardMonitor;
+import io.netty.channel.ChannelHandlerContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,8 +30,7 @@ public class HttpServerMonitor extends ForwardMonitor
     protected void forward2Client(JSONObject jsonObject)
     {
         String channelId = jsonObject.getString(FieldName.CHANNEL_ID);
-        jsonObject.remove(FieldName.CHANNEL_ID);
-        jsonObject.remove(FieldName.SERVER);
+        removeIdentityInfo(jsonObject);
         ForwardContext clientCtx = getContext(channelId);
         if (clientCtx != null)
         {//当前服务器直接处理,然后返回给客户端
@@ -40,5 +40,21 @@ public class HttpServerMonitor extends ForwardMonitor
         }
         else
             logger.info("Client has not ChannelHandlerContext channelId:"+ channelId);
+    }
+
+    @Override
+    protected void addIdentityInfo(ChannelHandlerContext ctx, JSONObject jsonObject)
+    {
+        jsonObject.put(FieldName.FROM_SERVER, getServerName());
+        jsonObject.put(FieldName.CHANNEL_ID, ctx.channel().id().asLongText());
+        jsonObject.put(FieldName.CLIENT_IP, ctx.channel().remoteAddress().toString()); //记录客户端登录地址
+    }
+
+    @Override
+    protected void removeIdentityInfo(JSONObject jsonObject)
+    {
+        jsonObject.remove(FieldName.FROM_SERVER);
+        jsonObject.remove(FieldName.CHANNEL_ID);
+        jsonObject.remove(FieldName.CLIENT_IP);
     }
 }
