@@ -270,7 +270,7 @@ public class TimeUtils
      *
      * @return 时间字符串
      */
-    public static String new2String()
+    public static String now2String()
     {
         return date2String(new Date(), DEFAULT_PATTERN);
     }

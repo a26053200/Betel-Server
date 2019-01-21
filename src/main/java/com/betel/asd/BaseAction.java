@@ -70,7 +70,11 @@ public abstract class BaseAction<T>
     {
 
     }
-
+    //回应客户端请求 带数据体 (到底转发给谁,由具体Monitor决定)
+    public void rspdClient(Session session)
+    {
+        rspdClient(session, null);
+    }
     //回应客户端请求 带数据体 (到底转发给谁,由具体Monitor决定)
     public void rspdClient(Session session, JSONObject sendJson)
     {

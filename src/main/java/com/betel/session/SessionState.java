@@ -11,7 +11,4 @@ public enum SessionState
     Success,
     Fail,
     UnknowError,
-
-    //角色名已经存在
-    RoleNameHasAlreadyExists,
 }

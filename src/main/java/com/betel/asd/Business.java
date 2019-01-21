@@ -1,7 +1,9 @@
 package com.betel.asd;
 
+import com.alibaba.fastjson.JSONObject;
 import com.betel.asd.interfaces.IBusiness;
 import com.betel.common.Monitor;
+import com.betel.consts.FieldName;
 import com.betel.servers.action.ImplAction;
 import com.betel.session.Session;
 import com.betel.utils.TimeUtils;
@@ -9,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * @ClassName: Business
@@ -22,6 +25,22 @@ public abstract class Business<T> implements IBusiness<T>
     protected ImplAction action;
     protected Monitor monitor;
     protected BaseService<T> service;
+    private HashMap<String, T> beanMap;
+
+    public Business()
+    {
+        beanMap = new HashMap<>();
+    }
+
+    public T putBean(String channelId, T t)
+    {
+        return beanMap.put(channelId, t);
+    }
+
+    public T getBeanByChannelId(String channelId)
+    {
+        return beanMap.get(channelId);
+    }
 
     @Override
     public String getViceKey()
@@ -52,6 +71,13 @@ public abstract class Business<T> implements IBusiness<T>
     public void Handle(Session session, String method)
     {
         logger.error(Business.class.getSimpleName() + " is no Handle service for method:" + method);
+    }
+
+    protected void rspdMessage(Session session, String msg)
+    {
+        JSONObject rspdJson = new JSONObject();
+        rspdJson.put(FieldName.MSG, msg);
+        action.rspdClient(session, rspdJson);
     }
 
     protected String now()
