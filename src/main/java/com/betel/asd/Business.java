@@ -3,10 +3,13 @@ package com.betel.asd;
 import com.alibaba.fastjson.JSONObject;
 import com.betel.asd.interfaces.IBusiness;
 import com.betel.common.Monitor;
+import com.betel.consts.Action;
 import com.betel.consts.FieldName;
 import com.betel.servers.action.ImplAction;
 import com.betel.session.Session;
+import com.betel.utils.BytesUtils;
 import com.betel.utils.TimeUtils;
+import io.netty.channel.Channel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,6 +45,10 @@ public abstract class Business<T> implements IBusiness<T>
         return beanMap.get(channelId);
     }
 
+    public T removeBean(String channelId)
+    {
+        return beanMap.remove(channelId);
+    }
     @Override
     public String getViceKey()
     {
@@ -79,6 +86,7 @@ public abstract class Business<T> implements IBusiness<T>
         rspdJson.put(FieldName.MSG, msg);
         action.rspdClient(session, rspdJson);
     }
+
 
     protected String now()
     {

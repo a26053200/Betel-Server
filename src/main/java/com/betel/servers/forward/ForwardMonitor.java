@@ -110,4 +110,27 @@ public abstract class ForwardMonitor extends Monitor
         byte[] bytes = BytesUtils.string2Bytes(jsonObject.toString());
         sendBytes(serverClient.getChannel(),bytes);
     }
+
+    //只发送给服务器
+    @Override
+    public void sendToServer(String serverName,String action,JSONObject data)
+    {
+        data.put(FieldName.SERVER, serverName);
+        data.put(FieldName.ACTION, action);
+        String jsonString = data.toString();
+        serverClient.getChannel().writeAndFlush(BytesUtils.packBytes(BytesUtils.string2Bytes(jsonString)));
+    }
+
+    //推送给客户端
+    @Override
+    public void pushToClient(String channelId, String serverName, String action, JSONObject data)
+    {
+        JSONObject sendJson = new JSONObject();
+        sendJson.put(FieldName.SERVER, serverName);
+        sendJson.put(FieldName.CHANNEL_ID, channelId);
+        sendJson.put(FieldName.ACTION, action);
+        sendJson.put(FieldName.DATA,data);
+        String jsonString = sendJson.toString();
+        serverClient.getChannel().writeAndFlush(BytesUtils.packBytes(BytesUtils.string2Bytes(jsonString)));
+    }
 }

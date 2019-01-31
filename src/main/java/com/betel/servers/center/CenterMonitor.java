@@ -59,10 +59,24 @@ public class CenterMonitor extends Monitor
         }
     }
 
+    @Override
+    public void sendToServer(String serverName, String action, JSONObject data)
+    {
+
+    }
+
+    @Override
+    public void pushToClient(String channelId, String serverName, String action, JSONObject data)
+    {
+
+    }
+
     // 转发给
     private void forward2Server(ChannelHandlerContext ctx, JSONObject jsonObject)
     {
         byte[] bytes = BytesUtils.string2Bytes(jsonObject.toString());
         sendBytes(ctx.channel(), bytes);
     }
+
+
 }

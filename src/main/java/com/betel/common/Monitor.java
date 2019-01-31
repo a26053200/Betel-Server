@@ -3,6 +3,7 @@ package com.betel.common;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.betel.config.ServerConfigVo;
+import com.betel.consts.FieldName;
 import com.betel.database.RedisClient;
 import com.betel.servers.action.ImplAction;
 import com.betel.utils.BytesUtils;
@@ -234,4 +235,10 @@ public abstract class Monitor
         response.headers().set("Access-Control-Allow-Origin", "*");
         channel.writeAndFlush(response);
     }
+
+    //服务器之间发送
+    public abstract void sendToServer(String serverName,String action,JSONObject data);
+
+    //推送给客户端
+    public abstract void pushToClient(String channelId,String serverName, String action, JSONObject data);
 }
