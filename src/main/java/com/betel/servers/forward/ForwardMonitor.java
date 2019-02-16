@@ -10,6 +10,8 @@ import com.betel.utils.BytesUtils;
 import com.betel.utils.StringUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 
@@ -21,6 +23,7 @@ import java.util.HashMap;
  */
 public abstract class ForwardMonitor extends Monitor
 {
+    final static Logger logger = LogManager.getLogger(ForwardMonitor.class);
     /**
      * 服务器的客户端
      */
@@ -118,6 +121,7 @@ public abstract class ForwardMonitor extends Monitor
         data.put(FieldName.SERVER, serverName);
         data.put(FieldName.ACTION, action);
         String jsonString = data.toString();
+        logger.info("[Send to Server]" + jsonString);
         serverClient.getChannel().writeAndFlush(BytesUtils.packBytes(BytesUtils.string2Bytes(jsonString)));
     }
 
@@ -131,6 +135,7 @@ public abstract class ForwardMonitor extends Monitor
         sendJson.put(FieldName.ACTION, action);
         sendJson.put(FieldName.DATA,data);
         String jsonString = sendJson.toString();
+        logger.info("[Push to Client]" + jsonString);
         serverClient.getChannel().writeAndFlush(BytesUtils.packBytes(BytesUtils.string2Bytes(jsonString)));
     }
 }
