@@ -4,12 +4,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.betel.asd.BaseAction;
 import com.betel.config.ServerConfigVo;
 import com.betel.consts.FieldName;
+import com.betel.servers.action.ImplAction;
 import com.betel.servers.forward.ForwardContext;
 import com.betel.servers.forward.ForwardMonitor;
 import com.betel.utils.BytesUtils;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Iterator;
 
 /**
  * @ClassName: NodeServerMonitor
@@ -36,13 +39,29 @@ public class NodeServerMonitor extends ForwardMonitor
             logger.info("Recv action: " + actionParam);
             String actionName = actions[0];
             String actionMethod = actions.length > 1 ? actions[1] : FieldName.ACTION;
-            BaseAction action = getAction(actionName);
-            if (action != null)
-                action.ActionHandler(ctx, jsonObject, actionMethod);
-            else
-                logger.error("There is no action service for action:" + actionParam);
+            if (FieldName.PUSH.equals(actionName))
+            {
+                OnPushHandler(ctx, jsonObject, actionParam);
+            }else{
+                BaseAction action = getAction(actionName);
+                if (action != null)
+                    action.ActionHandler(ctx, jsonObject, actionMethod);
+                else
+                    logger.error("There is no action service for action:" + actionParam);
+            }
         }else{
             logger.error("There is no action service for receive json:" + jsonObject.toString());
+        }
+    }
+
+    //推送消息
+    protected void OnPushHandler(ChannelHandlerContext ctx, JSONObject jsonObject, String method)
+    {
+        Iterator<String> it = actionMap.keySet().iterator();
+        while (it.hasNext())
+        {
+            BaseAction action = getAction(it.next());
+            action.OnPushHandler(ctx, jsonObject, method);
         }
     }
 

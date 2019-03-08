@@ -11,6 +11,7 @@ import com.betel.database.RedisKeys;
 import com.betel.session.Session;
 import com.betel.session.SessionState;
 import com.betel.utils.JsonUtils;
+import io.netty.channel.ChannelHandlerContext;
 
 import java.util.Iterator;
 
@@ -70,7 +71,13 @@ public class ImplAction<T> extends BaseAction<T>
         sendJson.put(FieldName.ERROR, error);
         rspdClient(session, sendJson);
     }
-
+    //推送业务
+    @Override
+    public void OnPushHandler(ChannelHandlerContext ctx, JSONObject jsonObject, String method)
+    {
+        Session session = new Session(ctx, jsonObject);
+        this.business.OnPushHandle(session,method);
+    }
     class QueryEntry extends Process<T>
     {
         @Override

@@ -16,6 +16,7 @@ public class ServerConfigVo
     private String dbHost;
     private int dbPort;
     private int dbIndex;
+    private String dbPw;
     private int decoderLengthFieldOffset;
     private int decoderLengthFieldLength;
 
@@ -59,6 +60,11 @@ public class ServerConfigVo
         return dbIndex;
     }
 
+    public String getDbPw()
+    {
+        return dbPw;
+    }
+
     public int getDecoderLengthFieldOffset()
     {
         return decoderLengthFieldOffset;
@@ -69,7 +75,7 @@ public class ServerConfigVo
         return decoderLengthFieldLength;
     }
 
-    public ServerConfigVo(String name, int port, String centerServerName, String centerServerHost, int centerServerPort, String dbHost, int dbPort, int dbIndex, int decoderLengthFieldOffset, int decoderLengthFieldLength)
+    public ServerConfigVo(String name, int port, String centerServerName, String centerServerHost, int centerServerPort, String dbHost, int dbPort, int dbIndex, String dbPw, int decoderLengthFieldOffset, int decoderLengthFieldLength)
     {
         this.name = name;
         this.port = port;
@@ -79,6 +85,7 @@ public class ServerConfigVo
         this.dbHost = dbHost;
         this.dbPort = dbPort;
         this.dbIndex = dbIndex;
+        this.dbPw = dbPw;
         this.decoderLengthFieldOffset = decoderLengthFieldOffset;
         this.decoderLengthFieldLength = decoderLengthFieldLength;
     }

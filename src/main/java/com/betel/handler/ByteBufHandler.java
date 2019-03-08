@@ -41,7 +41,7 @@ public class ByteBufHandler extends SimpleChannelInboundHandler<ByteBuf>
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf buf) throws Exception
     {
         //Channel incoming = ctx.channel();
-        logger.info("收到数据长度:" + buf.readableBytes());
+        //logger.info("收到数据长度:" + buf.readableBytes());
         monitor.recvByteBuf(ctx,buf);
     }
 
@@ -50,7 +50,7 @@ public class ByteBufHandler extends SimpleChannelInboundHandler<ByteBuf>
     {
         super.channelReadComplete(ctx);
         Channel incoming = ctx.channel();
-        logger.info("Client ip:" + incoming.remoteAddress() + " channel has flush over");
+        //logger.info("Client ip:" + incoming.remoteAddress() + " channel has flush over");
         ctx.flush();
     }
 

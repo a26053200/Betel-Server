@@ -30,4 +30,11 @@ public interface IBusiness<T>
      * @param method
      */
     void Handle(Session session, String method);
+
+    /**
+     * 处理推送业务
+     * @param session
+     * @param method
+     */
+    void OnPushHandle(Session session, String method);
 }

@@ -1,5 +1,6 @@
 package com.betel.database;
 
+import com.betel.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
@@ -29,10 +30,12 @@ public class RedisClient
     {
     }
 
-    public Jedis connectDB(String host, int port)
+    public Jedis connectDB(String host, int port, String pw)
     {
         if (jedis == null)
             jedis = new Jedis(host, port);
+        if (!StringUtils.isNullOrEmpty(pw))
+            jedis.auth(pw);
         logger.info(String.format("Redis Database connection success! connection info:%s:%d", host, port));
         return jedis;
     }

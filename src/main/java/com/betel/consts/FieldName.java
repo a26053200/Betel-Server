@@ -21,6 +21,8 @@ public class FieldName
 
     public static final String CHANNEL_ID           = "channelId";
 
+    public static final String PUSH                 = "push";
+
     public static final String DATA                 = "data";
 
     public static final String STATE                = "state";

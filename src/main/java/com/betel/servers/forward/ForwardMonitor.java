@@ -68,7 +68,7 @@ public abstract class ForwardMonitor extends Monitor
     public void handshake(Channel channel)
     {
         JSONObject sendJson = new JSONObject();
-        sendJson.put(FieldName.SERVER, getCerverCfgInfo().getCenterServerName());
+        sendJson.put(FieldName.SERVER, getServerCfgInfo().getCenterServerName());
         sendJson.put(FieldName.HANDSHAKE_SERVER, getServerName());
         sendJson.put(FieldName.ACTION, Action.HANDSHAKE);
         String jsonString = sendJson.toString();

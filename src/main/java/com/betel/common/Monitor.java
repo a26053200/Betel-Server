@@ -7,6 +7,7 @@ import com.betel.consts.FieldName;
 import com.betel.database.RedisClient;
 import com.betel.servers.action.ImplAction;
 import com.betel.utils.BytesUtils;
+import com.betel.utils.JsonUtils;
 import com.betel.utils.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -73,7 +74,7 @@ public abstract class Monitor
     {
         return serverCfgInfo.getName();
     }
-    public ServerConfigVo getCerverCfgInfo()
+    public ServerConfigVo getServerCfgInfo()
     {
         return serverCfgInfo;
     }
@@ -200,7 +201,7 @@ public abstract class Monitor
     {
         if (this.serverCfgInfo != null && !StringUtils.isNullOrEmpty(this.serverCfgInfo.getDbHost()))
         {//连接数据库
-            RedisClient.getInstance().connectDB(this.serverCfgInfo.getDbHost(),this.serverCfgInfo.getDbPort());
+            RedisClient.getInstance().connectDB(this.serverCfgInfo.getDbHost(),this.serverCfgInfo.getDbPort(),this.serverCfgInfo.getDbPw());
             this.db = RedisClient.getInstance().getDB(this.serverCfgInfo.getDbIndex());
         }
     }

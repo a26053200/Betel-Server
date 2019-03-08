@@ -59,6 +59,11 @@ public abstract class BaseAction<T>
         }
     }
 
+    //推送业务
+    public void OnPushHandler(ChannelHandlerContext ctx, JSONObject jsonObject, String method)
+    {
+
+    }
     //其他非常规业务
     public void otherBusiness(Session session, String method)
     {

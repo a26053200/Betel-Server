@@ -80,6 +80,12 @@ public abstract class Business<T> implements IBusiness<T>
         logger.error(Business.class.getSimpleName() + " is no Handle service for method:" + method);
     }
 
+    @Override
+    public void OnPushHandle(Session session, String method)
+    {
+        
+    }
+
     protected void rspdMessage(Session session, String msg)
     {
         JSONObject rspdJson = new JSONObject();
