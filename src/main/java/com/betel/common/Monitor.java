@@ -74,13 +74,28 @@ public abstract class Monitor
     {
         return serverCfgInfo.getName();
     }
+
     public ServerConfigVo getServerCfgInfo()
     {
         return serverCfgInfo;
     }
+
     public ChannelGroup getChannelGroup()
     {
         return channelGroup;
+    }
+
+    public boolean removeChannelGroup(Channel ch)
+    {
+        if (channelGroup.remove(ch))
+        {
+            OnChannelRemoved(ch);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public Channel getChannel(ChannelId channelId)
@@ -116,6 +131,7 @@ public abstract class Monitor
             ex.printStackTrace();
         }
     }
+
     // 接收客户端发来的字节,然后转换为json
     public void recvByteBuf(ChannelHandlerContext ctx, ByteBuf buf, long packLen)
     {
@@ -133,20 +149,21 @@ public abstract class Monitor
             ex.printStackTrace();
         }
     }
+
     // 接收服务器之间的数据,直接可以转化为json
     public void recvJsonBuff(ChannelHandlerContext ctx, ByteBuf buf)
     {
         String json = BytesUtils.readString(buf);
-        logger.info(String.format("[recv] json:%s",  json));
+        logger.info(String.format("[recv] json:%s", json));
         //不知道为什么 以后查
-        while(!json.startsWith("{"))
+        while (!json.startsWith("{"))
         {
             logger.info("Receive json buff 首字符异常:" + json);
             json = json.substring(1);//当收到json
             logger.info("Receive json buff 纠正首字母:" + json);
         }
-        logger.info(String.format("[recv] json:%s",  json));
-        recvJson(ctx,json);
+        logger.info(String.format("[recv] json:%s", json));
+        recvJson(ctx, json);
     }
 
     protected void recvJson(ChannelHandlerContext ctx, String json)
@@ -166,16 +183,16 @@ public abstract class Monitor
     {
         try
         {
-            if(json.startsWith("?"))
+            if (json.startsWith("?"))
             {
                 logger.warn("Receive weixin App json 首字符异常:" + json);
                 json = json.substring(1);//去掉问号
                 logger.warn("Receive weixin App json 去掉问号:" + json);
             }
-            if(!json.startsWith("{") && !json.endsWith("{"))// 加上花括号
+            if (!json.startsWith("{") && !json.endsWith("{"))// 加上花括号
             {
                 logger.warn("Receive weixin App json 首字符异常:" + json);
-                json = "{" + json+ "}";
+                json = "{" + json + "}";
                 logger.warn("Receive weixin App json 加上花括号:" + json);
             }
 
@@ -186,6 +203,14 @@ public abstract class Monitor
         {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * @param ch
+     */
+    protected void OnChannelRemoved(Channel ch)
+    {
+
     }
 
     /**
@@ -201,7 +226,7 @@ public abstract class Monitor
     {
         if (this.serverCfgInfo != null && !StringUtils.isNullOrEmpty(this.serverCfgInfo.getDbHost()))
         {//连接数据库
-            RedisClient.getInstance().connectDB(this.serverCfgInfo.getDbHost(),this.serverCfgInfo.getDbPort(),this.serverCfgInfo.getDbPw());
+            RedisClient.getInstance().connectDB(this.serverCfgInfo.getDbHost(), this.serverCfgInfo.getDbPort(), this.serverCfgInfo.getDbPw());
             this.db = RedisClient.getInstance().getDB(this.serverCfgInfo.getDbIndex());
         }
     }
@@ -218,6 +243,7 @@ public abstract class Monitor
 
     /**
      * 直接响应客户端
+     *
      * @param channel
      * @param msg
      * @param useJson 是否使用json传输，决定了是否在字符后面加 '\0' 结尾符符号
@@ -226,7 +252,7 @@ public abstract class Monitor
     {
         logger.info(String.format("[Http Rspd]:%s", msg));
         FullHttpResponse response = new DefaultFullHttpResponse(
-                HTTP_1_1, OK, Unpooled.wrappedBuffer(BytesUtils.string2Bytes(msg,false)));
+                HTTP_1_1, OK, Unpooled.wrappedBuffer(BytesUtils.string2Bytes(msg, false)));
         if (useJson)
             response.headers().set(CONTENT_TYPE, "application/json");
         else
@@ -238,8 +264,8 @@ public abstract class Monitor
     }
 
     //服务器之间发送
-    public abstract void sendToServer(String serverName,String action,JSONObject data);
+    public abstract void sendToServer(String serverName, String action, JSONObject data);
 
     //推送给客户端
-    public abstract void pushToClient(String channelId,String serverName, String action, JSONObject data);
+    public abstract void pushToClient(String channelId, String serverName, String action, JSONObject data);
 }
