@@ -19,6 +19,23 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <!-- 设置deploy的地址 -->
+    <distributionManagement>
+        <repository>
+            <id>maven-releases</id>
+            <name>User Porject Release</name>
+            <url>http://118.31.3.216/maven/respositor/maven-releases/</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>maven-snapshots</id>
+            <name>User Porject Snapshots</name>
+            <url>http://118.31.3.216/maven/respositor/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core-->
         <dependency>
