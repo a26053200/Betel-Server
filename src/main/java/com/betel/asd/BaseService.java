@@ -1,9 +1,8 @@
 package com.betel.asd;
 
-import com.betel.asd.interfaces.IService;
+import com.betel.spring.IRedisService;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @ClassName: BaseService
@@ -11,63 +10,58 @@ import java.util.Set;
  * @Author: zhengnan
  * @Date: 2018/11/18 0:23
  */
-public class BaseService<T> implements IService<T>
+public class BaseService<T extends BaseVo> implements IRedisService<T>
 {
-    private BaseDao<T> baseDao;
+    private RedisDao<T> dao;
 
-    public BaseDao<T> getBaseDao()
+    public RedisDao<T> getDao()
     {
-        return baseDao;
+        return dao;
     }
-    public void setBaseDao(BaseDao baseDao)
+    public void setDao(RedisDao dao)
     {
-        this.baseDao = baseDao;
-    }
-    @Override
-    public void addEntry(T t)
-    {
-        this.getBaseDao().addEntry(t);
+        this.dao = dao;
     }
 
     @Override
-    public T getEntryById(String id)
+    public boolean addEntity(T t)
     {
-        return this.getBaseDao().getEntryById(id);
+        return dao.addEntity(t);
     }
 
     @Override
-    public Set<T> getEntrysByIds(String[] ids)
+    public boolean batchAddEntity(List<T> datas)
     {
-        return this.getBaseDao().getEntrysByIds(ids);
+        return dao.batchAddEntity(datas);
     }
 
     @Override
-    public List<T> getEntrys()
+    public T getEntity(String id)
     {
-        return this.getBaseDao().getEntrys();
+        return dao.getEntity(id);
     }
 
     @Override
-    public List<T> getViceEntrys(String viceId)
+    public List<T> getViceEntities(String viceId)
     {
-        return this.getBaseDao().getViceEntrys(viceId);
+        return dao.getViceEntities(viceId);
     }
 
     @Override
-    public void updateEntry(T t)
+    public boolean updateEntity(T t)
     {
-        this.getBaseDao().updateEntry(t);
+        return dao.updateEntity(t);
     }
 
     @Override
-    public void deleteEntriesByIDS(String[] ids)
+    public void deleteEntity(List<String> keys)
     {
-        this.getBaseDao().deleteEntriesByIDS(ids);
+        dao.deleteEntity(keys);
     }
 
     @Override
-    public boolean deleteEntry(String id)
+    public void deleteEntity(String id)
     {
-        return this.getBaseDao().deleteEntry(id);
+        dao.deleteEntity(id);
     }
 }

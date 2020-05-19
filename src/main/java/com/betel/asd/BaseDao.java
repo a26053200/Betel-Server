@@ -2,7 +2,6 @@ package com.betel.asd;
 
 import com.alibaba.fastjson.JSONObject;
 import com.betel.asd.interfaces.IDao;
-import com.betel.consts.FieldName;
 import com.betel.database.RedisKeys;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,12 +35,12 @@ public class BaseDao<T> implements IDao<T>
     private String getFullKey(JSONObject json)
     {
         //获取副键,如果有
-        String viceKey = RedisKeys.NOME.equals(viceKeyField) ? RedisKeys.NOME : RedisKeys.SPLIT + json.getString(viceKeyField);
+        String viceKey = RedisKeys.NONE.equals(viceKeyField) ? RedisKeys.NONE : RedisKeys.SPLIT + json.getString(viceKeyField);
         String key = tableName + RedisKeys.SPLIT + json.getString(RedisKeys.ID) + viceKey;
         return key;
     }
     @Override
-    public void addEntry(T t)
+    public void addEntity(T t)
     {
         JSONObject json = (JSONObject)JSONObject.toJSON(t);
         String key = getFullKey(json);
@@ -50,9 +49,9 @@ public class BaseDao<T> implements IDao<T>
     }
 
     @Override
-    public T getEntryById(String id)
+    public T getEntityById(String id)
     {
-        if(RedisKeys.NOME.equals(viceKeyField))
+        if(RedisKeys.NONE.equals(viceKeyField))
         {//没有副键
             String key = tableName + RedisKeys.SPLIT + id;
             if (db.exists(key))
@@ -67,7 +66,7 @@ public class BaseDao<T> implements IDao<T>
             }
         }else{
             String key = tableName + RedisKeys.SPLIT + id + RedisKeys.SPLIT + RedisKeys.WILDCARD;
-            List<T> list = getEntryList(db.keys(key));
+            List<T> list = getEntityList(db.keys(key));
             if (list.size() > 0)
             {
                 return list.get(0);
@@ -79,32 +78,32 @@ public class BaseDao<T> implements IDao<T>
     }
 
     @Override
-    public Set<T> getEntrysByIds(String[] ids)
+    public Set<T> getEntitiesByIds(String[] ids)
     {
         Set<T> set = new HashSet<>();
         for(String id : ids)
         {
-            T t = getEntryById(id);
+            T t = getEntityById(id);
             set.add(t);
         }
         return set;
     }
 
     @Override
-    public List<T> getEntrys()
+    public List<T> getEntities()
     {
         String key = tableName + RedisKeys.SPLIT + RedisKeys.WILDCARD;
-        return getEntryList(db.keys(key));
+        return getEntityList(db.keys(key));
     }
 
     @Override
-    public List<T> getViceEntrys(String viceId)
+    public List<T> getViceEntities(String viceId)
     {
         String key = tableName + RedisKeys.SPLIT + RedisKeys.WILDCARD + RedisKeys.SPLIT + viceId;
-        return getEntryList(db.keys(key));
+        return getEntityList(db.keys(key));
     }
 
-    private List<T> getEntryList(Set<String> keySet)
+    private List<T> getEntityList(Set<String> keySet)
     {
         List<T> list = new ArrayList<>();
         Iterator<String> it = keySet.iterator();
@@ -118,7 +117,7 @@ public class BaseDao<T> implements IDao<T>
     }
 
     @Override
-    public void updateEntry(T t)
+    public void updateEntity(T t)
     {
         JSONObject json = (JSONObject)JSONObject.toJSON(t);
         String key = getFullKey(json);
@@ -129,13 +128,13 @@ public class BaseDao<T> implements IDao<T>
     public void deleteEntriesByIDS(String[] ids)
     {
         for(String id : ids)
-            deleteEntry(id);
+            deleteEntity(id);
     }
 
     @Override
-    public boolean deleteEntry(String id)
+    public boolean deleteEntity(String id)
     {
-        if(RedisKeys.NOME.equals(viceKeyField))
+        if(RedisKeys.NONE.equals(viceKeyField))
         {
             String key = tableName + RedisKeys.SPLIT + id;
             if (db.exists(key))

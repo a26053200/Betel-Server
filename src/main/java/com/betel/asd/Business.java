@@ -7,6 +7,7 @@ import com.betel.consts.Action;
 import com.betel.consts.FieldName;
 import com.betel.servers.action.ImplAction;
 import com.betel.session.Session;
+import com.betel.spring.IRedisService;
 import com.betel.utils.BytesUtils;
 import com.betel.utils.TimeUtils;
 import io.netty.channel.Channel;
@@ -22,12 +23,12 @@ import java.util.HashMap;
  * @Author: zhengnan
  * @Date: 2018/11/22 0:30
  */
-public abstract class Business<T> implements IBusiness<T>
+public abstract class Business<T extends BaseVo> implements IBusiness<T>
 {
     final static Logger logger = LogManager.getLogger(Business.class);
     protected ImplAction action;
     protected Monitor monitor;
-    protected BaseService<T> service;
+    protected IRedisService<T> service;
     private HashMap<String, T> beanMap;
 
     public Business()
@@ -63,13 +64,13 @@ public abstract class Business<T> implements IBusiness<T>
     }
 
     @Override
-    public T newEntry(Session session)
+    public T newEntity(Session session)
     {
         return null;
     }
 
     @Override
-    public T updateEntry(Session session)
+    public T updateEntity(Session session)
     {
         return null;
     }

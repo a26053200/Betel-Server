@@ -26,36 +26,36 @@ public interface IDao<T>
      * 添加
      * @param t
      */
-    public void addEntry(T t);
+    public void addEntity(T t);
 
     /**
      * 查询一个
      * @return
      */
-    public T getEntryById(String id);
+    public T getEntityById(String id);
 
     /**
      * 按ids查询
      */
-    public Set<T> getEntrysByIds(String[] ids);
+    public Set<T> getEntitiesByIds(String[] ids);
 
     /**
      * 不分页的查询
      * @return
      */
-    public List<T> getEntrys();
+    public List<T> getEntities();
 
     /**
      * 不分页的查询副键列表
      * @return
      */
-    public List<T> getViceEntrys(String viceId);
+    public List<T> getViceEntities(String viceId);
 
     /**
      * 修改
      * @param t
      */
-    public void updateEntry(T t);
+    public void updateEntity(T t);
 
     /**
      * 根据ids删除一些数据
@@ -67,5 +67,5 @@ public interface IDao<T>
      * 根据id删除一条数据
      * @param id
      */
-    public boolean deleteEntry(String id);
+    public boolean deleteEntity(String id);
 }

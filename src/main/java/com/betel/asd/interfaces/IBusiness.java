@@ -15,14 +15,14 @@ public interface IBusiness<T>
      * @param session
      * @return
      */
-    T newEntry(Session session);
+    T newEntity(Session session);
 
     /**
      * 更新一个实体
      * @param session
      * @return
      */
-    T updateEntry(Session session);
+    T updateEntity(Session session);
 
     /**
      * 处理业务
