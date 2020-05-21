@@ -24,6 +24,8 @@ public interface IRedisDao<T extends BaseVo>
      * 查询某一张表的总的记录数
      */
     //int getCount(final BaseQuery baseQuery);
+
+    void setTableName(String tableName);
     /**
      * 添加
      * @param t

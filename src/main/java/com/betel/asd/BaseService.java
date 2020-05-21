@@ -14,6 +14,12 @@ public class BaseService<T extends BaseVo> implements IRedisService<T>
 {
     private RedisDao<T> dao;
 
+    @Override
+    public void setTableName(String tableName)
+    {
+
+    }
+
     public RedisDao<T> getDao()
     {
         return dao;

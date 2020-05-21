@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface IRedisService<T extends BaseVo>
 {
+
+    void setTableName(String tableName);
     /**
      * 获取dao
      * @return

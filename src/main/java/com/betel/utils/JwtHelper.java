@@ -1,8 +1,7 @@
 package com.betel.utils;
 
 import com.alibaba.fastjson.JSONObject;
-
-//import io.jsonwebtoken.*;
+import org.springframework.util.DigestUtils;
 
 import java.util.Base64;
 import java.util.Date;
@@ -26,13 +25,20 @@ public class JwtHelper
      * @param id
      * @return Token
      */
-    public static String createJWT(String id)
+    public static String createJWT(String id, boolean base64)
     {
-        JSONObject json = new JSONObject();
-        json.put("id",id);
-        json.put("secretKey",tokenSecretKey);
-        json.put("ttlMillis",expiresSecond);
-        return Base64.getEncoder().encodeToString(BytesUtils.string2Bytes(json.toString()));
+        if (base64)
+        {
+            JSONObject json = new JSONObject();
+            json.put("id",id);
+            json.put("secretKey",tokenSecretKey);
+            json.put("ttlMillis",expiresSecond);
+            return Base64.getEncoder().encodeToString(BytesUtils.string2Bytes(json.toString()));
+        }
+        else
+        {
+            return DigestUtils.md5DigestAsHex(id.getBytes());
+        }
     }
 
     /**

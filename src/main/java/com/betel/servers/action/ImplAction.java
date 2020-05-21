@@ -40,6 +40,7 @@ public class ImplAction<T extends BaseVo> extends BaseAction<T>
         return service;
     }
 
+    //public ImplAction(Monitor monitor, String bean, RedisDao<T> redisDao, Business<T> business, IRedisService<T> service)
     public ImplAction(Monitor monitor, String bean, Business<T> business, IRedisService<T> service)
     {
         super();
@@ -47,7 +48,7 @@ public class ImplAction<T extends BaseVo> extends BaseAction<T>
         this.bean = bean;
         this.business = business;
         this.service = service;
-        this.service.setDao(new RedisDao<>());
+//        this.service.setDao(redisDao);
         this.business.setAction(this);
         //增删改查
 //        registerProcess(OperateName.ADD,        bean, new AddEntity());

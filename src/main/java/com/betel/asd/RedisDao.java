@@ -7,30 +7,37 @@ import com.betel.spring.IRedisDao;
 import com.betel.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Description
  * @Author zhengnan
  * @Date 2020/5/19
  */
+
+@Repository
 public class RedisDao<T extends BaseVo> extends AbstractBaseRedisDao<String, Serializable> implements IRedisDao<T>
 {
     final static Logger logger = LogManager.getLogger(RedisDao.class);
 
     private String tableName;
+    protected Class<T> clazz;
 
     public RedisDao()
     {
-        Class<T> tClass = (Class<T>)((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        this.tableName = tClass.getSimpleName();
+
+    }
+
+    public void setTableName(String tableName)
+    {
+        this.tableName = tableName;
     }
 
     private String getFullKey(T t)
@@ -86,15 +93,15 @@ public class RedisDao<T extends BaseVo> extends AbstractBaseRedisDao<String, Ser
     @Override
     public List<T> getEntities(final String key)
     {
+        Set<String> keys = redisTemplate.keys(key);
         List<T> result = redisTemplate.execute((RedisCallback<List<T>>) connection ->
         {
             List<T> resList = new ArrayList<>();
-            ListOperations<String, Serializable> operations = redisTemplate.opsForList();
-            long size = operations.size(key);
-            if (size > 0)
+            ValueOperations<String, Serializable> operations = redisTemplate.opsForValue();
+            List<Serializable> list = operations.multiGet(keys);
+            if (list.size() > 0)
             {
-                List<Serializable> list = operations.range(key, 0, size - 1);
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < list.size(); i++)
                     resList.add((T) list.get(i));
             } else
                 logger.error(String.format("Table '%s' has not entities that key == %s", tableName, key));
