@@ -12,19 +12,7 @@ import java.util.List;
  */
 public interface IRedisService<T extends BaseVo>
 {
-
     void setTableName(String tableName);
-    /**
-     * 获取dao
-     * @return
-     */
-    RedisDao<T> getDao();
-
-    /**
-     * 设置dao
-     * @param dao
-     */
-    void setDao(RedisDao<T> dao);
     /**
      * 添加
      * @param t

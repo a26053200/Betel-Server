@@ -44,8 +44,7 @@ public class RedisDao<T extends BaseVo> extends AbstractBaseRedisDao<String, Ser
     {
         //获取副键,如果有
         String viceKey = StringUtils.isNullOrEmpty(t.getVid()) ? RedisKeys.NONE : RedisKeys.SPLIT + t.getVid();
-        String key = tableName + RedisKeys.SPLIT + t.getId() + viceKey;
-        return key;
+        return tableName + RedisKeys.SPLIT + t.getId() + viceKey;
     }
 
     @Override
@@ -128,7 +127,7 @@ public class RedisDao<T extends BaseVo> extends AbstractBaseRedisDao<String, Ser
         boolean result = redisTemplate.execute((RedisCallback<Boolean>) connection ->
         {
             ValueOperations<String, Serializable> valueOper = redisTemplate.opsForValue();
-            valueOper.set(t.getId(), t);
+            valueOper.set(getFullKey(t), t);
             return true;
         });
         return result;

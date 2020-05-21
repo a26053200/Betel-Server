@@ -14,28 +14,20 @@ import java.util.Date;
  */
 public class JwtHelper
 {
-    //明文Token,用于测试 以后有时间再做加密的
-
-    //Token 密钥
-    public final static String tokenSecretKey = "emhlbmduYW50YW5naHVpanVhbnpoZW5neWk==";
-    //Token 过期时间
-    public final static int expiresSecond = 5 * 60 * 60 * 1000;
-
     /**
      * @param id
      * @return Token
      */
-    public static String createJWT(String id, boolean base64)
+    public static String createJWT(String id, String tokenSecretKey, int expiresSecond, boolean base64)
     {
         if (base64)
         {
             JSONObject json = new JSONObject();
-            json.put("id",id);
-            json.put("secretKey",tokenSecretKey);
-            json.put("ttlMillis",expiresSecond);
+            json.put("id", id);
+            json.put("secretKey", tokenSecretKey);
+            json.put("ttlMillis", expiresSecond);
             return Base64.getEncoder().encodeToString(BytesUtils.string2Bytes(json.toString()));
-        }
-        else
+        } else
         {
             return DigestUtils.md5DigestAsHex(id.getBytes());
         }
@@ -45,7 +37,7 @@ public class JwtHelper
      * @param jwt
      * @return 是否验证通过
      */
-    public static boolean parseJWT(String jwt)
+    public static boolean parseJWT(String jwt, int expiresSecond)
     {
         byte[] jsonBytes = Base64.getDecoder().decode(jwt);
         JSONObject json = JSONObject.parseObject(BytesUtils.readString(jsonBytes));
