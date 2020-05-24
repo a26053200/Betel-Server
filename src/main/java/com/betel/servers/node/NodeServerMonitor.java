@@ -2,11 +2,13 @@ package com.betel.servers.node;
 
 import com.alibaba.fastjson.JSONObject;
 import com.betel.asd.BaseAction;
+import com.betel.asd.Business;
 import com.betel.config.ServerConfigVo;
 import com.betel.consts.FieldName;
 import com.betel.servers.action.ImplAction;
 import com.betel.servers.forward.ForwardContext;
 import com.betel.servers.forward.ForwardMonitor;
+import com.betel.spring.IRedisService;
 import com.betel.utils.BytesUtils;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +31,12 @@ public class NodeServerMonitor extends ForwardMonitor
         super(serverCfgInfo);
     }
 
+    protected <T> void pushService(Class<T> clazz, Business business, IRedisService service)
+    {
+        String beanName = clazz.getSimpleName().toLowerCase();// 统一小写
+        actionMap.put(beanName,      new ImplAction<>(this, beanName, business, service));
+    }
+
     @Override
     protected void RespondJson(ChannelHandlerContext ctx, JSONObject jsonObject)
     {
@@ -37,7 +45,7 @@ public class NodeServerMonitor extends ForwardMonitor
             String actionParam = jsonObject.getString(FieldName.ACTION);
             String[] actions = actionParam.split("@");
             logger.info("Recv action: " + actionParam);
-            String actionName = actions[0];
+            String actionName = actions[0].toLowerCase();// 统一小写
             String actionMethod = actions.length > 1 ? actions[1] : FieldName.ACTION;
             if (FieldName.PUSH.equals(actionName))
             {

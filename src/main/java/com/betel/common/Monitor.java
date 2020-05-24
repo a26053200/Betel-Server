@@ -103,9 +103,15 @@ public abstract class Monitor
         return channelGroup.find(channelId);
     }
 
-    public ImplAction getAction(String name)
+    public <T> ImplAction getAction(Class<T> clazz)
     {
-        return actionMap.get(name);
+        String beanName = clazz.getSimpleName().toLowerCase();// 统一小写
+        return actionMap.get(beanName);
+    }
+
+    protected ImplAction getAction(String actionName)
+    {
+        return actionMap.get(actionName);
     }
 
     public Jedis getDB()
@@ -120,9 +126,9 @@ public abstract class Monitor
         long packHead = buf.readUnsignedInt();
         String json = BytesUtils.readString(buf, (int) packHead);
         logger.info(String.format("[recv] msgLen:%d json:%s", msgLen, json));
-        //已知JSONObject,目标要转换为json字符串
         try
         {
+            //已知JSONObject,目标要转换为json字符串
             JSONObject jsonObject = JSONObject.parseObject(json);
             RespondJson(ctx, jsonObject);
         }
