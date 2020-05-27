@@ -8,12 +8,15 @@ import com.betel.consts.FieldName;
 import com.betel.servers.action.ImplAction;
 import com.betel.servers.forward.ForwardContext;
 import com.betel.servers.forward.ForwardMonitor;
+import com.betel.session.Session;
 import com.betel.spring.IRedisService;
 import com.betel.utils.BytesUtils;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 
 /**
@@ -51,9 +54,35 @@ public class NodeServerMonitor extends ForwardMonitor
             {
                 OnPushHandler(ctx, jsonObject, actionParam);
             }else{
-                BaseAction action = getAction(actionName);
+                ImplAction action = getAction(actionName);
                 if (action != null)
-                    action.ActionHandler(ctx, jsonObject, actionMethod);
+                {
+                    //action.ActionHandler(ctx, jsonObject, actionMethod);
+                    Method[] methods = action.getBusiness().getClass().getDeclaredMethods();
+                    boolean invoked = false;
+                    for (Method method : methods)
+                    {
+                        if(method.getName().equals(actionMethod))
+                        {
+                            try
+                            {
+                                Session session = new Session(ctx, jsonObject);
+                                method.setAccessible(true);//设置为true可调用类的私有方法
+                                method.invoke(action.getBusiness(), session);
+                            } catch (IllegalAccessException e)
+                            {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            invoked = true;
+                            break;
+                        }
+                    }
+                    if(!invoked)
+                        logger.error("There is no method for business:" + actionParam);
+                }
                 else
                     logger.error("There is no action service for action:" + actionParam);
             }
