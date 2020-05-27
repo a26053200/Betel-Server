@@ -1,9 +1,11 @@
 package com.betel.asd;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.betel.database.RedisKeys;
 import com.betel.spring.AbstractBaseRedisDao;
 import com.betel.spring.IRedisDao;
+import com.betel.utils.DBUtils;
 import com.betel.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -100,8 +102,18 @@ public class RedisDao<T extends BaseVo> extends AbstractBaseRedisDao<String, Ser
             List<Serializable> list = operations.multiGet(keys);
             if (list.size() > 0)
             {
-                for (int i = 0; i < list.size(); i++)
-                    resList.add((T) list.get(i));
+                try
+                {
+                    for (int i = 0; i < list.size(); i++)
+                    {
+                        String json = DBUtils.serializeToString(list.get(i));
+                        T t = (T)DBUtils.deserializeToObject(json);
+                        resList.add(t);
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             } else
                 logger.error(String.format("Table '%s' has not entities that key == %s", tableName, key));
             return resList;
