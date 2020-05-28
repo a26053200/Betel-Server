@@ -40,12 +40,9 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter
             String uri = request.uri();
             try
             {
-                logger.info("[recv]" + uri);
                 String res = uri.substring(1);
-                if (!StringUtils.isNullOrEmpty(res))
+                if(!monitor.recvHttp(ctx, res))
                 {
-                    monitor.recvWxAppJson(ctx, res);
-                }else{
                     logger.error("Http request data is Empty!");
                     responseError(ctx, "Http request data is Empty!");
                 }
@@ -62,18 +59,10 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter
             try
             {
                 HttpContent content = (HttpContent) msg;
-                ByteBuf buf = content.content();
-                String res = BytesUtils.readString(buf);
-                buf.release();
-                if (StringUtils.isNullOrEmpty(res))
+                if(!monitor.recvHttp(ctx, content.content()))
                 {
                     logger.error("Http request data is Empty!");
                     responseError(ctx, "Http request data is Empty!");
-                }
-                else
-                {
-                    logger.info("[recv]" + res);
-                    monitor.recvWxAppJson(ctx, res);
                 }
             }
             catch (Exception e)

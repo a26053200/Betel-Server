@@ -1,5 +1,7 @@
 package com.betel.utils;
 
+import java.util.regex.Pattern;
+
 /**
  * @ClassName: StringUtils
  * @Description: 字符串工具
@@ -8,9 +10,18 @@ package com.betel.utils;
  */
 public class StringUtils
 {
+    static String base64Pattern = "^[a-zA-Z0-9/+]*={0,2}$";
     public static boolean isNullOrEmpty(String s)
     {
         return s == null || s.length() <= 0;
+    }
+
+    public static boolean isBase64Encode(String content)
+    {
+        if(content.length()%4!=0){
+            return false;
+        }
+        return Pattern.matches(base64Pattern, content);
     }
 
     public static boolean isNumber(String str)
@@ -24,14 +35,14 @@ public class StringUtils
         return true;
     }
 
-    public static String RemoveAllEmpty(String resource)
+    public static String removeAllEmpty(String resource)
     {
         StringBuffer src = new StringBuffer(resource);
-        src = RemoveAllChar(src, ' ');
+        src = removeAllChar(src, ' ');
         return src.toString();
     }
 
-    public static StringBuffer RemoveAllChar(StringBuffer src, char ch)
+    public static StringBuffer removeAllChar(StringBuffer src, char ch)
     {
         StringBuffer buffer = new StringBuffer();
         int position = 0;
@@ -51,7 +62,7 @@ public class StringUtils
     /// </summary>
     /// <param name="src"></param>
     /// <returns></returns>
-    public static String AddControlChar(String src)
+    public static String addControlChar(String src)
     {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < src.length(); i++)

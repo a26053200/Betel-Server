@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.betel.config.ServerConfigVo;
 import com.betel.consts.FieldName;
+import com.betel.consts.ServerConsts;
 import com.betel.database.RedisClient;
 import com.betel.servers.action.ImplAction;
 import com.betel.utils.BytesUtils;
@@ -24,6 +25,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.HashMap;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
@@ -172,34 +175,58 @@ public abstract class Monitor
         recvJson(ctx, json);
     }
 
-    protected void recvJson(ChannelHandlerContext ctx, String json)
+    public boolean recvHttp(ChannelHandlerContext ctx, ByteBuf buf) throws UnsupportedEncodingException
     {
-        try
+        String content = BytesUtils.readString(buf);
+        buf.release();
+        if (!StringUtils.isNullOrEmpty(content))
         {
-            JSONObject jsonObject = JSONObject.parseObject(json);
-            RespondJson(ctx, jsonObject);
+            logger.error("Http request data is Empty!");
+            return false;
         }
-        catch (JSONException ex)
+        else
         {
-            ex.printStackTrace();
+            recvHttp(ctx, content);
+            return true;
         }
     }
 
-    public void recvWxAppJson(ChannelHandlerContext ctx, String json)
+    public boolean recvHttp(ChannelHandlerContext ctx, String content) throws UnsupportedEncodingException
+    {
+        if (StringUtils.isNullOrEmpty(content))
+        {
+            logger.error("Http request data is Empty!");
+            return false;
+        }
+        else
+        {
+            String json = content;
+            if(StringUtils.isBase64Encode(content))
+            {//base64
+                byte[] bytes = Base64.getDecoder().decode(content);
+                json = new String(bytes, ServerConsts.CHARSET_UTF_8);
+            }
+            logger.info("[recv]" + json);
+            recvJson(ctx, json);
+            return true;
+        }
+    }
+
+    public void recvJson(ChannelHandlerContext ctx, String json)
     {
         try
         {
             if (json.startsWith("?"))
             {
-                logger.warn("Receive weixin App json 首字符异常:" + json);
+                logger.warn("Receive App json 首字符异常:" + json);
                 json = json.substring(1);//去掉问号
-                logger.warn("Receive weixin App json 去掉问号:" + json);
+                logger.warn("Receive App json 去掉问号:" + json);
             }
             if (!json.startsWith("{") && !json.endsWith("{"))// 加上花括号
             {
-                logger.warn("Receive weixin App json 首字符异常:" + json);
+                logger.warn("Receive App json 首字符异常:" + json);
                 json = "{" + json + "}";
-                logger.warn("Receive weixin App json 加上花括号:" + json);
+                logger.warn("Receive App json 加上花括号:" + json);
             }
 
             JSONObject jsonObject = JSONObject.parseObject(json);
