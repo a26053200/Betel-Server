@@ -1,7 +1,7 @@
 package com.betel.asd;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.betel.asd.interfaces.IVo;
 import com.betel.database.RedisKeys;
 import com.betel.spring.AbstractBaseRedisDao;
 import com.betel.spring.IRedisDao;
@@ -25,17 +25,11 @@ import java.util.Set;
  */
 
 @Repository
-public class RedisDao<T extends BaseVo> extends AbstractBaseRedisDao<String, Serializable> implements IRedisDao<T>
+public class RedisDao<T extends IVo> extends AbstractBaseRedisDao<String, Serializable> implements IRedisDao<T>
 {
     final static Logger logger = LogManager.getLogger(RedisDao.class);
 
     private String tableName;
-    protected Class<T> clazz;
-
-    public RedisDao()
-    {
-
-    }
 
     public void setTableName(String tableName)
     {
@@ -106,8 +100,8 @@ public class RedisDao<T extends BaseVo> extends AbstractBaseRedisDao<String, Ser
                 {
                     for (int i = 0; i < list.size(); i++)
                     {
-                        String json = DBUtils.serializeToString(list.get(i));
-                        T t = (T)DBUtils.deserializeToObject(json);
+                        Serializable serializable = list.get(i);
+                        T t = (T)serializable;
                         resList.add(t);
                     }
                 }catch (Exception e)
@@ -158,5 +152,6 @@ public class RedisDao<T extends BaseVo> extends AbstractBaseRedisDao<String, Ser
         list.add(key);
         deleteEntity(list);
     }
+
 
 }

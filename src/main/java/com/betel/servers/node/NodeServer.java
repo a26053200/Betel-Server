@@ -71,7 +71,7 @@ public class NodeServer extends ServerBase implements IServerClient
             //服务器客户端连接服务器的服务器
             if (serverClient != null)
                 start(cfg, getMonitor());
-
+            onServerStart();
             f.channel().closeFuture().sync();
             logger.info(cfg + " close up...");
         }
@@ -80,6 +80,11 @@ public class NodeServer extends ServerBase implements IServerClient
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    protected void onServerStart()
+    {
+
     }
 
     @Override

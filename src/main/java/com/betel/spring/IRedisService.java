@@ -1,7 +1,7 @@
 package com.betel.spring;
 
-import com.betel.asd.BaseVo;
 import com.betel.asd.RedisDao;
+import com.betel.asd.interfaces.IVo;
 
 import java.util.List;
 
@@ -10,8 +10,10 @@ import java.util.List;
  * @Author zhengnan
  * @Date 2020/5/19
  */
-public interface IRedisService<T extends BaseVo>
+public interface IRedisService<T extends IVo>
 {
+    RedisDao<T> getDao();
+
     void setTableName(String tableName);
     /**
      * 添加

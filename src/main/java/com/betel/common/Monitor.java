@@ -53,10 +53,7 @@ public abstract class Monitor
      * 多个客户端链接通道
      */
     protected ChannelGroup channelGroup;
-    /**
-     * 数据库
-     */
-    protected Jedis db;
+
     /**
      * Actions
      */
@@ -69,8 +66,6 @@ public abstract class Monitor
         //所有已经链接的通道,用于广播
         channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
         actionMap = new HashMap<>();
-        //初始化数据库
-        initDB();
     }
 
     public String getServerName()
@@ -115,11 +110,6 @@ public abstract class Monitor
     protected ImplAction getAction(String actionName)
     {
         return actionMap.get(actionName);
-    }
-
-    public Jedis getDB()
-    {
-        return db;
     }
 
     // 接收客户端发来的字节,然后转换为json
@@ -251,18 +241,6 @@ public abstract class Monitor
      * @param jsonObject
      */
     protected abstract void RespondJson(ChannelHandlerContext ctx, JSONObject jsonObject);
-
-    /**
-     * 初始化数据库
-     */
-    private void initDB()
-    {
-        if (this.serverCfgInfo != null && !StringUtils.isNullOrEmpty(this.serverCfgInfo.getDbHost()))
-        {//连接数据库
-            RedisClient.getInstance().connectDB(this.serverCfgInfo.getDbHost(), this.serverCfgInfo.getDbPort(), this.serverCfgInfo.getDbPw());
-            this.db = RedisClient.getInstance().getDB(this.serverCfgInfo.getDbIndex());
-        }
-    }
 
     protected void sendBytes(Channel channel, byte[] bytes)
     {

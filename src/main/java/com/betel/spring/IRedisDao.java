@@ -1,7 +1,7 @@
 package com.betel.spring;
 
 
-import com.betel.asd.BaseVo;
+import com.betel.asd.interfaces.IVo;
 
 import java.util.List;
 import java.util.Set;
@@ -11,7 +11,7 @@ import java.util.Set;
  * @Author zhengnan
  * @Date 2020/5/19
  */
-public interface IRedisDao<T extends BaseVo>
+public interface IRedisDao<T extends IVo>
 {
     /**
      * 分页的查询
