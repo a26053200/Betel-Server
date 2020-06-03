@@ -43,6 +43,11 @@ public abstract class Business<T extends IVo> extends AbstractBaseRedisDao<Strin
         redisTemplate = service.getDao().getRedisTemplate();
     }
 
+    public ImplAction getAction()
+    {
+        return action;
+    }
+
     @Override
     public void Handle(Session session, String method)
     {

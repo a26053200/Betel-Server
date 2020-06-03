@@ -25,8 +25,6 @@ import java.util.Iterator;
  */
 public class ImplAction<T extends IVo> extends BaseAction<T>
 {
-    private String bean;
-
     private IRedisService<T> service;
 
     private Business business;
@@ -37,11 +35,10 @@ public class ImplAction<T extends IVo> extends BaseAction<T>
     }
 
     //public ImplAction(Monitor monitor, String bean, RedisDao<T> redisDao, Business<T> business, IRedisService<T> service)
-    public ImplAction(Monitor monitor, String bean, Business business, IRedisService<T> service)
+    public ImplAction(Monitor monitor, Business business, IRedisService<T> service)
     {
         super();
         this.monitor = monitor;
-        this.bean = bean;
         this.business = business;
         this.service = service;
         this.business.setAction(this);

@@ -37,7 +37,7 @@ public class NodeServerMonitor extends ForwardMonitor
     protected <T> void pushService(Class<T> clazz, Business business, IRedisService service)
     {
         String beanName = clazz.getSimpleName().toLowerCase();// 统一小写
-        actionMap.put(beanName,      new ImplAction<>(this, beanName, business, service));
+        actionMap.put(beanName,      new ImplAction<>(this, business, service));
     }
 
     @Override
