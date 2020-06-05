@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -66,7 +67,6 @@ public abstract class Business<T extends IVo> extends AbstractBaseRedisDao<Strin
         rspdJson.put(FieldName.MSG, msg);
         action.rspdClient(session, rspdJson);
     }
-
 
     public <V> List<V> getValueList(String key, int start, int end)
     {
