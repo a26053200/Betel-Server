@@ -9,6 +9,7 @@ import com.betel.common.Monitor;
 import com.betel.consts.FieldName;
 import com.betel.consts.OperateName;
 import com.betel.database.RedisKeys;
+import com.betel.servers.node.NodeServerMonitor;
 import com.betel.session.Session;
 import com.betel.session.SessionState;
 import com.betel.spring.IRedisService;
@@ -25,29 +26,19 @@ import java.util.Iterator;
  */
 public class ImplAction<T extends IVo> extends BaseAction<T>
 {
-    private IRedisService<T> service;
+    private BaseService service;
 
-    private Business business;
-
-    public IRedisService<T> getService()
+    public BaseService getService()
     {
         return service;
     }
 
     //public ImplAction(Monitor monitor, String bean, RedisDao<T> redisDao, Business<T> business, IRedisService<T> service)
-    public ImplAction(Monitor monitor, Business business, IRedisService<T> service)
+    public ImplAction(Monitor monitor, BaseService service)
     {
         super();
         this.monitor = monitor;
-        this.business = business;
         this.service = service;
-        this.business.setAction(this);
-    }
-
-    @Override
-    public void otherBusiness(Session session, String method)
-    {
-        business.Handle(session,method);
     }
 
     //返回给客户端错误信息
@@ -62,11 +53,6 @@ public class ImplAction<T extends IVo> extends BaseAction<T>
     public void OnPushHandler(ChannelHandlerContext ctx, JSONObject jsonObject, String method)
     {
         Session session = new Session(ctx, jsonObject);
-        this.business.OnPushHandle(session,method);
-    }
-
-    public Business getBusiness()
-    {
-        return business;
+        this.service.OnPushHandler(session, method);
     }
 }

@@ -2,9 +2,12 @@ package com.betel.servers.node;
 
 import com.alibaba.fastjson.JSONObject;
 import com.betel.asd.BaseAction;
+import com.betel.asd.BaseService;
 import com.betel.asd.Business;
+import com.betel.asd.interfaces.IVo;
 import com.betel.config.ServerConfigVo;
 import com.betel.consts.FieldName;
+import com.betel.event.EventDispatcher;
 import com.betel.servers.action.ImplAction;
 import com.betel.servers.forward.ForwardContext;
 import com.betel.servers.forward.ForwardMonitor;
@@ -18,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.function.BiConsumer;
 
 /**
  * @ClassName: NodeServerMonitor
@@ -34,10 +38,19 @@ public class NodeServerMonitor extends ForwardMonitor
         super(serverCfgInfo);
     }
 
-    protected <T> void pushService(Class<T> clazz, Business business, IRedisService service)
+    protected <T extends IVo> void pushService(Class<T> clazz, BaseService<T> service)
     {
         String beanName = clazz.getSimpleName().toLowerCase();// 统一小写
-        actionMap.put(beanName,      new ImplAction<>(this, business, service));
+        actionMap.put(beanName, new ImplAction(this, service));
+    }
+
+    public void OnAllServiceLoaded()
+    {
+        // 迭代值
+        for (ImplAction action : actionMap.values()) {
+            action.getService().OnLoaded();
+        }
+
     }
 
     @Override
@@ -58,7 +71,7 @@ public class NodeServerMonitor extends ForwardMonitor
                 if (action != null)
                 {
                     //action.ActionHandler(ctx, jsonObject, actionMethod);
-                    Method[] methods = action.getBusiness().getClass().getDeclaredMethods();
+                    Method[] methods = action.getService().getClass().getDeclaredMethods();
                     boolean invoked = false;
                     for (Method method : methods)
                     {
@@ -68,7 +81,7 @@ public class NodeServerMonitor extends ForwardMonitor
                             {
                                 Session session = new Session(ctx, jsonObject);
                                 method.setAccessible(true);//设置为true可调用类的私有方法
-                                method.invoke(action.getBusiness(), session);
+                                method.invoke(action.getService(), session);
                             } catch (IllegalAccessException e)
                             {
                                 e.printStackTrace();

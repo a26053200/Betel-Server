@@ -41,7 +41,11 @@ public abstract class Business<T extends IVo> extends AbstractBaseRedisDao<Strin
         this.action = action;
         monitor = action.getMonitor();
         service = action.getService();
-        redisTemplate = service.getDao().getRedisTemplate();
+        //redisTemplate = service.getDao().getRedisTemplate();
+    }
+    public void OnBusinessReady()
+    {
+
     }
 
     public ImplAction getAction()
@@ -66,28 +70,6 @@ public abstract class Business<T extends IVo> extends AbstractBaseRedisDao<Strin
         JSONObject rspdJson = new JSONObject();
         rspdJson.put(FieldName.MSG, msg);
         action.rspdClient(session, rspdJson);
-    }
-
-    public <V> List<V> getValueList(String key, int start, int end)
-    {
-        List<V> resList = new ArrayList<>();
-        ListOperations<String, Serializable> listOperations = redisTemplate.opsForList();
-        long size = listOperations.size(key);
-        List<Serializable> list = listOperations.range(key, start, end < size ? end : size - 1);
-        if (list.size() > 0) {
-            try {
-                for(int i = 0; i < list.size(); ++i) {
-                    String json = DBUtils.serializeToString(list.get(i));
-                    V t = (V)DBUtils.deserializeToObject(json);
-                    resList.add(t);
-                }
-            } catch (Exception var10) {
-                var10.printStackTrace();
-            }
-        } else {
-            logger.error(String.format("DB has not entities that key == %s", key));
-        }
-        return resList;
     }
 
     protected String now()

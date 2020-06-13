@@ -2,10 +2,13 @@ package com.betel.common;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.betel.asd.BaseAction;
+import com.betel.asd.Business;
 import com.betel.config.ServerConfigVo;
 import com.betel.consts.FieldName;
 import com.betel.consts.ServerConsts;
 import com.betel.database.RedisClient;
+import com.betel.event.EventDispatcher;
 import com.betel.servers.action.ImplAction;
 import com.betel.utils.BytesUtils;
 import com.betel.utils.JsonUtils;
@@ -28,6 +31,7 @@ import redis.clients.jedis.Jedis;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
@@ -45,6 +49,12 @@ public abstract class Monitor
 {
     final static Logger logger = LogManager.getLogger(Monitor.class);
 
+    protected EventDispatcher eventDispatcher;
+
+    public EventDispatcher getEventDispatcher()
+    {
+        return eventDispatcher;
+    }
     /**
      * 服务器配置
      */

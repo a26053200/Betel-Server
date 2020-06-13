@@ -21,8 +21,6 @@ public abstract class BaseAction<T>
 {
     protected Monitor monitor;
 
-    protected HashMap<String, Process> processMap;
-
     public Monitor getMonitor()
     {
         return monitor;
@@ -30,44 +28,12 @@ public abstract class BaseAction<T>
 
     public BaseAction()
     {
-        processMap = new HashMap<>();
-    }
-
-    protected void registerProcess(String operate, String bean, Process process)
-    {
-        processMap.put(operate + "_" + bean, process);
-    }
-
-    public Process getProcess(String method)
-    {
-        String[] methods = method.split("_");
-        String operate = methods[0];
-        String bean = methods[1];
-        return processMap.get(operate + "_" + bean);
-    }
-
-    //常规业务
-    public void ActionHandler(ChannelHandlerContext ctx, JSONObject jsonObject, String method)
-    {
-        Session session = new Session(ctx, jsonObject);
-        Process process = getProcess(method);
-        if (process == null)
-        {
-            otherBusiness(session,method);
-        }else{
-            process.done(session);
-        }
     }
 
     //推送业务
     public void OnPushHandler(ChannelHandlerContext ctx, JSONObject jsonObject, String method)
     {
 
-    }
-    //其他非常规业务
-    public void otherBusiness(Session session, String method)
-    {
-        rspdClientError(session, ErrorCode.E0002);
     }
 
     //返回给客户端错误信息
