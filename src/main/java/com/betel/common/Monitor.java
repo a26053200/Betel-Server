@@ -179,7 +179,7 @@ public abstract class Monitor
     {
         String content = BytesUtils.readString(buf);
         buf.release();
-        if (!StringUtils.isNullOrEmpty(content))
+        if (StringUtils.isNullOrEmpty(content))
         {
             logger.error("Http request data is Empty!");
             return false;
