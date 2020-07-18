@@ -14,6 +14,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import org.apache.logging.log4j.LogManager;
@@ -59,6 +60,7 @@ public class HttpServer extends ServerBase implements IServerClient
                         {
                             ch.pipeline().addLast(new HttpRequestDecoder());
                             ch.pipeline().addLast(new HttpResponseEncoder());
+                            ch.pipeline().addLast(new HttpObjectAggregator(65536));
                             ch.pipeline().addLast(new HttpServerHandler(getMonitor()));
                         }
                     }).option(ChannelOption.SO_BACKLOG, 128)          // (5)

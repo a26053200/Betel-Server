@@ -7,7 +7,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.multipart.*;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -22,11 +25,22 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter
 
     private Monitor monitor;
 
+    private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); //Disk
+
     private HttpRequest request = null;
+
+    private HttpPostRequestDecoder decoder;
 
     public HttpServerHandler(Monitor monitor)
     {
         this.monitor = monitor;
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        if (decoder != null) {
+            decoder.cleanFiles();
+        }
     }
 
     @Override
@@ -37,39 +51,76 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter
         if (msg instanceof HttpRequest)
         {
             request = (HttpRequest) msg;
-            String uri = request.uri();
-            try
+            if (request.method() == HttpMethod.GET)
             {
-                String res = uri.substring(1);
-                if(!monitor.recvHttp(ctx, res))
+                String uri = request.uri();
+                try
                 {
-                    logger.error("Http request data is Empty!");
-                    responseError(ctx, "Http request data is Empty!");
+                    String res = uri.substring(1);
+                    if(!monitor.recvHttp(ctx, res))
+                    {
+                        logger.error("Http request data is Empty!");
+                        responseError(ctx, "Http request data is Empty!");
+                    }
                 }
-            }
-            catch (Exception e)
-            {//处理出错，返回错误信息
-                e.printStackTrace();
-                logger.error("Account SERVER Error");
-                responseError(ctx, "Account SERVER Error");
+                catch (Exception e)
+                {//处理出错，返回错误信息
+                    e.printStackTrace();
+                    logger.error("Account SERVER Error");
+                    responseError(ctx, "Account SERVER Error");
+                }
+            }else if (request.method() == HttpMethod.POST)
+            {
+                try
+                {
+                    decoder = new HttpPostRequestDecoder(factory, request);
+                }
+                catch (Exception e)
+                {//处理出错，返回错误信息
+                    e.printStackTrace();
+                    logger.error("Account SERVER Error");
+                    responseError(ctx, "Account SERVER Error");
+                }
             }
         }
-        if (msg instanceof HttpContent)
+        if (decoder != null)
         {
-            try
+            if (msg instanceof HttpContent)
             {
-                HttpContent content = (HttpContent) msg;
-                if(!monitor.recvHttp(ctx, content.content()))
+                HttpContent chunk = (HttpContent) msg;
+                decoder.offer(chunk);
+                try
                 {
-                    logger.error("Http request data is Empty!");
-                    responseError(ctx, "Http request data is Empty!");
+                    for (InterfaceHttpData data : decoder.getBodyHttpDatas())
+                    {
+                        if(data.getName().equals("unityData"))
+                        {
+                            if(data.getHttpDataType() == InterfaceHttpData.HttpDataType.FileUpload)
+                            {
+                                FileUpload fileUpload = (FileUpload) data;
+                                String fileName = fileUpload.getFilename();
+                                if(!monitor.recvHttp(ctx, fileUpload.getByteBuf()))
+                                {
+                                    //logger.error("Http request data is Empty!");
+                                    //responseError(ctx, "Http request data is Empty!");
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
-            }
-            catch (Exception e)
-            {//处理出错，返回错误信息
-                e.printStackTrace();
-                logger.error("Account SERVER Error");
-                responseError(ctx,"Account SERVER Error");
+                catch (Exception e)
+                {//处理出错，返回错误信息
+                    e.printStackTrace();
+                    logger.error("Account SERVER Error");
+                    responseError(ctx,"Account SERVER Error");
+                }
+                if (msg instanceof LastHttpContent)
+                {
+                    //logger.error("Last Http Content");
+                    decoder.destroy();
+                    decoder = null;
+                }
             }
         }
     }
