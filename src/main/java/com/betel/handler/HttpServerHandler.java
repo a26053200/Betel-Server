@@ -87,6 +87,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter
         {
             if (msg instanceof HttpContent)
             {
+                FileUpload fileUpload = null;
                 HttpContent chunk = (HttpContent) msg;
                 decoder.offer(chunk);
                 try
@@ -95,17 +96,13 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter
                     {
                         if(data.getName().equals("unityData"))
                         {
-                            if(data.getHttpDataType() == InterfaceHttpData.HttpDataType.FileUpload)
+                            if(fileUpload == null && data.getHttpDataType() == InterfaceHttpData.HttpDataType.FileUpload)
                             {
-                                FileUpload fileUpload = (FileUpload) data;
-                                String fileName = fileUpload.getFilename();
-                                if(!monitor.recvHttp(ctx, fileUpload.getByteBuf()))
-                                {
-                                    //logger.error("Http request data is Empty!");
-                                    //responseError(ctx, "Http request data is Empty!");
-                                }
+                                fileUpload = (FileUpload) data;
+                                //data.release();
+                                //break;
                             }
-                            break;
+                            //data.release();
                         }
                     }
                 }
@@ -118,7 +115,16 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter
                 if (msg instanceof LastHttpContent)
                 {
                     //logger.error("Last Http Content");
-                    decoder.destroy();
+                    //chunk.retain();
+                    if(fileUpload != null)
+                    {
+                        String fileName = fileUpload.getFilename();
+                        if(!monitor.recvHttp(ctx, fileUpload.getByteBuf()))
+                        {
+                            responseError(ctx, "Http post data is empty");
+                        }
+                    }
+                    //decoder.destroy();
                     decoder = null;
                 }
             }
