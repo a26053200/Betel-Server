@@ -142,7 +142,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception
     {
-        logger.error("http server exceptionCaught..");
+        logger.error("http server exceptionCaught.. cause:" + cause.toString());
         ctx.close();
     }
 }
