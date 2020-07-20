@@ -58,6 +58,11 @@ public interface IRedisDao<T extends IVo>
     List<T> getViceEntities(String viceId);
 
     /**
+     * 查询该表所有数据
+     * @return
+     */
+    List<T> getAllEntities();
+    /**
      * 修改
      * @param t
      */

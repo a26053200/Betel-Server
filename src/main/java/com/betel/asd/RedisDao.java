@@ -123,6 +123,13 @@ public class RedisDao<T extends IVo> extends AbstractBaseRedisDao<String, Serial
     }
 
     @Override
+    public List<T> getAllEntities()
+    {
+        String key = tableName + RedisKeys.SPLIT + RedisKeys.WILDCARD + RedisKeys.SPLIT + RedisKeys.WILDCARD;
+        return getEntities(key);
+    }
+
+    @Override
     public boolean updateEntity(T t)
     {
         String id = t.getId();
