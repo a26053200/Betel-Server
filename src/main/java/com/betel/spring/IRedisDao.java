@@ -79,4 +79,9 @@ public interface IRedisDao<T extends IVo>
      * @param id
      */
     void deleteEntity(String id);
+
+    /**
+     * 根据ids删除一些数据
+     */
+    void deleteEntity(T t);
 }

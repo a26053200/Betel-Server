@@ -36,7 +36,7 @@ public class RedisDao<T extends IVo> extends AbstractBaseRedisDao<String, Serial
         this.tableName = tableName;
     }
 
-    private String getFullKey(T t)
+    public String getFullKey(T t)
     {
         //获取副键,如果有
         String viceKey = StringUtils.isNullOrEmpty(t.getVid()) ? RedisKeys.NONE : RedisKeys.SPLIT + t.getVid();
@@ -160,5 +160,11 @@ public class RedisDao<T extends IVo> extends AbstractBaseRedisDao<String, Serial
         deleteEntity(list);
     }
 
-
+    @Override
+    public void deleteEntity(T t)
+    {
+        List<String> list = new ArrayList<>();
+        list.add(getFullKey(t));
+        deleteEntity(list);
+    }
 }
